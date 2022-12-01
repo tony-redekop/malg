@@ -1,3 +1,3 @@
 set(TEST_FILES test.cpp)
 
-add_executable(tests ${TEST_FILES})
+add_executable(runtest ${TEST_FILES})

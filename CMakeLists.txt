@@ -3,5 +3,5 @@ project(malg)
 
 add_subdirectory(test)
 
-target_link_options(tests PRIVATE -Wall -Wextra -ldl)
-target_include_directories(tests PRIVATE include)
+target_link_options(runtest PRIVATE -Wall -Wextra -ldl)
+target_include_directories(runtest PRIVATE include)
