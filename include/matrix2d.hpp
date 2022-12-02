@@ -31,7 +31,7 @@ class Matrix2D
     Matrix2D(std::initializer_list<std::initializer_list<T>> listlist) : 
       Matrix2D((int)listlist.size(), (int)(listlist.begin())->size()) 
     {
-      populateArray();
+      populateArray(listlist);
     }
     ~Matrix2D();
 
@@ -50,7 +50,7 @@ class Matrix2D
   private:
     // member functions
     T** constructArray(unsigned nrows, unsigned ncols, const T& val = T());
-    void populateArray();
+    void populateArray(const std::initializer_list<std::initializer_list<T>>&);
 
     // data members
     T** ptr_;
@@ -94,7 +94,7 @@ inline T** Matrix2D<T>::constructArray(unsigned nrows, unsigned ncols, const T& 
     pool = new T[nrows * ncols]{ val };
     for(unsigned i = 0; i < nrows; i++) {
       ptr[i] = pool;
-      // use pointer arithmetic to point to next row in pool
+      // point to next row in pool
       pool += ncols;
     }
     return ptr;
@@ -106,11 +106,13 @@ inline T** Matrix2D<T>::constructArray(unsigned nrows, unsigned ncols, const T& 
 }
 
 template<typename T> 
-inline void Matrix2D<T>::populateArray() 
+inline void Matrix2D<T>::populateArray(const std::initializer_list<std::initializer_list<T>>& listlist)
 {
   for(unsigned i = 0; i < nrows_; i++) {
     for(unsigned j = 0; j < ncols_; j++) {
-      *(*(ptr_+i)+j) = 666;
+      // note: pointer arithmetic is awesome
+      // this maps each value from our initializer list to our R X C pool of values
+      *(*(ptr_+i)+j) = ((listlist.begin()+i)->begin())[j];
     }
   }
   return;
