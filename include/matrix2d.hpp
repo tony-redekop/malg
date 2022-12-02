@@ -3,6 +3,7 @@
 
 #include <new>
 #include <stdexcept>
+#include <initializer_list>
 
 namespace malg {
 
@@ -22,7 +23,15 @@ template <typename T> class Matrix2D {
     typedef T value_type;
 
     Matrix2D() : ptr_(nullptr), nrows_(0), ncols_(0) {}
+    // initializes data members and calls constructArray() to allocated memory for R X C values
     Matrix2D(unsigned nrows, unsigned ncols, const T& val = T());
+    // allows us to use list initialization when initializing a Matrix2D type.
+    // populates the array constructed array by the delegate constructor.
+    Matrix2D(std::initializer_list<std::initializer_list<T>> listlist) : 
+      Matrix2D((int)listlist.size(), (int)(listlist.begin())->size()) 
+    {
+      populateArray();
+    }
     ~Matrix2D();
 
     T** get_ptr() { return ptr_; };
@@ -40,6 +49,14 @@ template <typename T> class Matrix2D {
   private:
     // member functions
     T** constructArray(unsigned nrows, unsigned ncols, const T& val = T());
+    void populateArray() {
+      for(unsigned i = 0; i < nrows_; i++) {
+        for(unsigned j = 0; j < ncols_; j++) {
+          *(*(ptr_+i)+j) = 666;
+        }
+      }
+      return;
+    };
     // data members
     T** ptr_;
     unsigned nrows_;
