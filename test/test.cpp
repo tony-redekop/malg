@@ -1,4 +1,4 @@
-#include "malg.hpp"
+#include "matrix2d.hpp"
 #include <iostream>
 
 int main() {
