@@ -18,15 +18,16 @@ namespace malg {
  * contiguously allocates memory AND allows dynamically sizing of matrix.
  * we can also access each element using clean [i][j] syntax.
  */
-template <typename T> class Matrix2D {
+template <typename T> 
+class Matrix2D 
+{
   public:
     typedef T value_type;
 
     Matrix2D() : ptr_(nullptr), nrows_(0), ncols_(0) {}
     // initializes data members and calls constructArray() to allocated memory for R X C values
     Matrix2D(unsigned nrows, unsigned ncols, const T& val = T());
-    // allows us to use list initialization when initializing a Matrix2D type.
-    // populates the array constructed array by the delegate constructor.
+    // allows us to use list initialization to create our matrix 
     Matrix2D(std::initializer_list<std::initializer_list<T>> listlist) : 
       Matrix2D((int)listlist.size(), (int)(listlist.begin())->size()) 
     {
@@ -49,14 +50,8 @@ template <typename T> class Matrix2D {
   private:
     // member functions
     T** constructArray(unsigned nrows, unsigned ncols, const T& val = T());
-    void populateArray() {
-      for(unsigned i = 0; i < nrows_; i++) {
-        for(unsigned j = 0; j < ncols_; j++) {
-          *(*(ptr_+i)+j) = 666;
-        }
-      }
-      return;
-    };
+    void populateArray();
+
     // data members
     T** ptr_;
     unsigned nrows_;
@@ -64,7 +59,8 @@ template <typename T> class Matrix2D {
 };
 
 template<typename T>
-Matrix2D<T>::Matrix2D(unsigned nrows, unsigned ncols, const T& val) {
+Matrix2D<T>::Matrix2D(unsigned nrows, unsigned ncols, const T& val) 
+{
   if(!nrows) {
     throw std::invalid_argument("number of rows is 0");
   }
@@ -77,17 +73,19 @@ Matrix2D<T>::Matrix2D(unsigned nrows, unsigned ncols, const T& val) {
 }
 
 template<typename T>
-Matrix2D<T>::~Matrix2D() {
+Matrix2D<T>::~Matrix2D() 
+{
   if(ptr_) {
-    // delete[] deallocates memory and calls destructor for array of objects created with new[]
-    // using plain old delete here results in undefined behavior
+    // delete[] deallocates memory and calls destructor for array of objects on the heap 
+    // using plain old delete here would result in undefined behavior
     delete[] ptr_[0]; // delete pool 
-    delete[] ptr_; // remove array of row pointers
+    delete[] ptr_; // delete array of row pointers
   }
 };
 
 template<typename T> 
-inline T** Matrix2D<T>::constructArray(unsigned nrows, unsigned ncols, const T& val) {
+inline T** Matrix2D<T>::constructArray(unsigned nrows, unsigned ncols, const T& val) 
+{
   T** ptr = nullptr;
   T* pool = nullptr;
   try {
@@ -108,17 +106,31 @@ inline T** Matrix2D<T>::constructArray(unsigned nrows, unsigned ncols, const T& 
 }
 
 template<typename T> 
-inline const T* Matrix2D<T>::operator[](unsigned row) {
+inline void Matrix2D<T>::populateArray() 
+{
+  for(unsigned i = 0; i < nrows_; i++) {
+    for(unsigned j = 0; j < ncols_; j++) {
+      *(*(ptr_+i)+j) = 666;
+    }
+  }
+  return;
+};
+
+template<typename T> 
+inline const T* Matrix2D<T>::operator[](unsigned row) 
+{
   return ptr_[row];
 }
 
 template<typename T> 
-inline Matrix2D<T> Matrix2D<T>::operator*(const Matrix2D<T>& right) const {
+inline Matrix2D<T> Matrix2D<T>::operator*(const Matrix2D<T>& right) const 
+{
   return *this;
 }
 
 template<typename T> 
-inline Matrix2D<T> Matrix2D<T>::operator*(const T right) const {
+inline Matrix2D<T> Matrix2D<T>::operator*(const T right) const 
+{
   return *this;
 }
 
