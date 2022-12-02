@@ -6,12 +6,17 @@
 
 namespace malg {
 
-// template class allows elements of generic built-in type (i.e. int, float, double, etc).
-// implements a matrix as an array of row pointers to pointers (2D array).
-// abstractly, we can think of the matrix as a R x C "pool" of values.
-// each pointer in the array points to appropriate position in the pool.
-// this implementation contigiously allocates matrix AND allows it to be dynamically sized.
-// we can also access each element using clean [i][j] syntax.
+/**
+ * template class allows elements of generic built-in type (int, float, etc).
+ *
+ * this class implements a matrix as an array of row pointers to pointers (2D array).
+ * abstractly, we can think of the matrix as a R x C "pool" of values.
+ * each pointer in the array points to appropriate position in the pool.
+ *
+ * unlike vector of vectors or traditional C++ 2D array, this implementation 
+ * contiguously allocates memory AND allows dynamically sizing of matrix.
+ * we can also access each element using clean [i][j] syntax.
+ */
 template <typename T> class Matrix2D {
   public:
     typedef T value_type;
