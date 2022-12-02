@@ -20,8 +20,6 @@ template <typename T> class Matrix2D {
     Matrix2D(unsigned nrows, unsigned ncols, const T& val = T());
     ~Matrix2D();
 
-    T** constructArray(unsigned nrows, unsigned ncols, const T& val = T());
-
     T** get_ptr() { return ptr_; };
     unsigned get_rows() const { return nrows_; }
     unsigned get_cols() const { return ncols_; }
@@ -35,6 +33,9 @@ template <typename T> class Matrix2D {
     Matrix2D<T> operator*(const T right) const;
 
   private:
+    // member functions
+    T** constructArray(unsigned nrows, unsigned ncols, const T& val = T());
+    // data members
     T** ptr_;
     unsigned nrows_;
     unsigned ncols_;
