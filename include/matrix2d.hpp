@@ -2,6 +2,7 @@
 #define MATRIX2D_HPP
 
 #include <new>
+#include <stdexcept>
 
 namespace malg {
 
@@ -15,7 +16,7 @@ template <typename T> class Matrix2D {
   public:
     typedef T value_type;
 
-    T** constructMatrix(unsigned nrows, unsigned ncols, const T& val = T()) {
+    T** constructArray(unsigned nrows, unsigned ncols, const T& val = T()) {
       T** ptr = nullptr;
       T* pool = nullptr;
       try {
@@ -47,6 +48,18 @@ template <typename T> class Matrix2D {
     };
 
     Matrix2D() : ptr_(nullptr), nrows_(0), ncols_(0) {}
+    Matrix2D(unsigned nrows, unsigned ncols, const T& val = T()) {
+      if(!nrows) {
+        throw std::invalid_argument("number of rows is 0");
+      }
+      if(!ncols) {
+        throw std::invalid_argument("number of cols is 0");
+      }
+      ptr_ = constructArray(nrows, ncols, val);
+      nrows_ = nrows;
+      ncols_ = ncols;
+    }
+
     ~Matrix2D() {
       if(ptr_) {
         // delete[] deallocates memory and calls destructor for array of objects created with new[]
