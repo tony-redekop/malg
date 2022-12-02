@@ -71,6 +71,10 @@ template <typename T> class Matrix2D {
 
     void transpose();
 
+    const T* operator[](unsigned row) {
+      return ptr_[row];
+    }
+
     // matrix * matrix
     Matrix2D operator*(const Matrix2D& right) const {
       return *this;
