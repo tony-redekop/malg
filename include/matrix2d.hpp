@@ -35,9 +35,9 @@ class Matrix2D
     // index matrix using clean [i][j] syntax
     const T* operator[](unsigned row);
     // matrix + matrix
-    const Matrix2D<T>& operator+(const Matrix2D<T>& right) const;
+    const Matrix2D<T> operator+(const Matrix2D<T>& right) const;
     // matrix * matrix
-    const Matrix2D<T>& operator*(const Matrix2D<T>& right) const;
+    const Matrix2D<T> operator*(const Matrix2D<T>& right) const;
     // matrix * scalar 
     Matrix2D<T> operator*(const T right) const;
 
@@ -77,9 +77,12 @@ template<typename T>
 Matrix2D<T>::~Matrix2D() 
 {
   if(ptr_) {
-    // must use delete[], using plain old delete here would result in undefined behavior
-    delete[] ptr_[0]; // delete pool 
-    delete[] ptr_;    // delete array of row pointers
+    if(ptr_[0]) {
+      delete[] ptr_[0];   // delete array of values (i.e 'pool')
+      ptr_[0] = nullptr;  // avoid dangling pointers
+    }
+    delete[] ptr_;        // delete array of row pointers
+    ptr_ = nullptr;
   }
 };
 
@@ -90,16 +93,24 @@ inline T** Matrix2D<T>::constructArray(unsigned nrows, unsigned ncols, const T& 
   T* pool = nullptr;
   try {
     ptr = new T*[nrows];
-    pool = new T[nrows * ncols]{ val };  // value initialize elements to default val for T
+    pool = new T[nrows * ncols]{ val };  // value initialize to default val for T
     for(unsigned i = 0; i < nrows; i++) {
       ptr[i] = pool;
       pool += ncols;  // point to next row in pool
     }
     return ptr;
   }
-  // delete ptr and throw exception in case of allocation error
   catch (std::bad_alloc& ex) {
-    delete[] ptr;
+    // note: we must delete ptr[0] here, not pool. 
+    // pool is incremented is not guaranteed to point to beginning of array.
+    if(ptr) {
+      if(ptr[0]) {
+        delete[] ptr[0];   // delete array of values (i.e 'pool')
+        ptr[0] = nullptr;  // avoid dangling pointers
+      }
+      delete[] ptr;        // delete array of row pointers
+      ptr = nullptr;
+    }
     throw ex;
   }
 }
@@ -136,34 +147,35 @@ inline const T* Matrix2D<T>::operator[](unsigned row)
 }
 
 template<typename T> 
-inline const Matrix2D<T>& Matrix2D<T>::operator+(const Matrix2D<T>& right) const 
+inline const Matrix2D<T> Matrix2D<T>::operator+(const Matrix2D<T>& right) const 
 {
   // 'this' pointer is bound to left-hand operand 
   // note: syntax in form of ptr_[i][j] is equivalent to *(*(ptr_+i)+j)
-  malg::Matrix2D<T>* mC = new malg::Matrix2D<T>(this->nrows_, this->ncols_);
+  malg::Matrix2D<T> mC = Matrix2D<T>(this->nrows_, this->ncols_); 
   for(unsigned i=0; i < this->nrows_; i++) {
     for(unsigned j=0;  j < this->ncols_; j++) {
-      mC->ptr_[i][j] = this->ptr_[i][j] + right.ptr_[i][j]; 
+      // mC->ptr_[i][j] = this->ptr_[i][j] + right.ptr_[i][j]; 
+      mC.ptr_[i][j] = this->ptr_[i][j] + right.ptr_[i][j]; 
     }
   }
-  return *mC;
+  return mC;
 }
 
 template<typename T> 
-inline const Matrix2D<T>& Matrix2D<T>::operator*(const Matrix2D<T>& right) const 
+inline const Matrix2D<T> Matrix2D<T>::operator*(const Matrix2D<T>& right) const 
 {
   // 'this' pointer is bound to left-hand operand 
   // note: syntax in form of ptr_[i][j] is equivalent to *(*(ptr_+i)+j)
-  malg::Matrix2D<T>* mC = new malg::Matrix2D<T>(this->nrows_, right.ncols_);
+  malg::Matrix2D<T> mC = malg::Matrix2D<T>(this->nrows_, right.ncols_);
   for(unsigned i=0; i < this->nrows_; i++) {
     for(unsigned j=0;  j < right.ncols_; j++) {
-      mC->ptr_[i][j] = 0;
+      mC.ptr_[i][j] = 0;
       for(unsigned k=0; k < this->ncols_; k++) {
-        mC->ptr_[i][j] = mC->ptr_[i][j] + this->ptr_[i][k] * right.ptr_[k][j];
+        mC.ptr_[i][j] = mC.ptr_[i][j] + this->ptr_[i][k] * right.ptr_[k][j];
       }
     }
   } 
-  return *mC;
+  return mC;
 }
 
 template<typename T> 
