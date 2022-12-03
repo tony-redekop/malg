@@ -45,7 +45,7 @@ class Matrix2D
     // matrix + matrix
     const Matrix2D<T>& operator+(const Matrix2D<T>& right) const;
     // matrix * matrix
-    Matrix2D<T> operator*(const Matrix2D& right) const;
+    const Matrix2D<T>& operator*(const Matrix2D<T>& right) const;
     // matrix * scalar 
     Matrix2D<T> operator*(const T right) const;
 
@@ -137,6 +137,23 @@ inline const Matrix2D<T>& Matrix2D<T>::operator+(const Matrix2D<T>& right) const
       *(*(mC->ptr_+i)+j) = *(*(this->ptr_+i)+j) + *(*(right.ptr_+i)+j);
     }
   }
+  return *mC;
+}
+
+template<typename T> 
+inline const Matrix2D<T>& Matrix2D<T>::operator*(const Matrix2D<T>& right) const 
+{
+  // 'this' pointer is bound to left-hand operand 
+  malg::Matrix2D<T>* mC = new malg::Matrix2D<T>(this->nrows_, right.ncols_);
+
+  for(unsigned i=0; i < this->nrows_; i++) {
+    for(unsigned j=0;  j < right.ncols_; j++) {
+      *(*(mC->ptr_+i)+j) = 0;
+      for(unsigned k=0; k < this->ncols_; k++) {
+        *(*(mC->ptr_+i)+j) = *(*(mC->ptr_+i)+j) + (*(*(this->ptr_+i)+k)) * (*(*(right.ptr_+k)+j));
+      }
+    }
+  } 
   return *mC;
 }
 
