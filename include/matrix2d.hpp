@@ -42,6 +42,8 @@ class Matrix2D
     // operations    
     void transpose();
     const T* operator[](unsigned row);
+    // matrix + matrix
+    const Matrix2D<T>& operator+(const Matrix2D<T>& right) const;
     // matrix * matrix
     Matrix2D<T> operator*(const Matrix2D& right) const;
     // matrix * scalar 
@@ -125,9 +127,17 @@ inline const T* Matrix2D<T>::operator[](unsigned row)
 }
 
 template<typename T> 
-inline Matrix2D<T> Matrix2D<T>::operator*(const Matrix2D<T>& right) const 
+inline const Matrix2D<T>& Matrix2D<T>::operator+(const Matrix2D<T>& right) const 
 {
-  return *this;
+  // 'this' pointer is bound to left-hand operand 
+  malg::Matrix2D<T>* mC = new malg::Matrix2D<T>(this->nrows_, this->ncols_);
+  unsigned j;
+  for(unsigned i=0; i < this->nrows_; i++) {
+    for(unsigned j=0;  j < this->ncols_; j++) {
+      *(*(mC->ptr_+i)+j) = *(*(this->ptr_+i)+j) + *(*(right.ptr_+i)+j);
+    }
+  }
+  return *mC;
 }
 
 template<typename T> 
