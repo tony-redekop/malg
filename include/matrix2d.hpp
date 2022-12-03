@@ -10,13 +10,13 @@ namespace malg {
 /**
  * template class allows elements of generic built-in type (int, float, etc).
  *
- * this class implements a matrix as an array of row pointers to pointers (2D array).
- * abstractly, we can think of the matrix as a R x C "pool" of values.
- * each pointer in the array points to appropriate position in the pool.
+ * implements a matrix as an array of row pointers pointing to a position in an array.
+ * abstractly, we can think of the matrix as a 2D array or an R x C 'pool' of values.
  *
- * unlike vector of vectors or traditional C++ 2D array, this implementation 
- * contiguously allocates memory AND allows dynamically sizing of matrix.
- * we can also access each element using clean [i][j] syntax.
+ * unlike a 'vector of vectors' or traditional C++ 2D array, this implementation 
+ * contiguously allocates memory AND allows dynamic sizing of matrix at runtime.
+ * we can also list-initialize matrices and access elements using [i][j] syntax.
+ *
  */
 template <typename T> 
 class Matrix2D 
@@ -32,7 +32,7 @@ class Matrix2D
 
     // transpose a square matrix in-place    
     void transpose();
-    // allows us to index matrix using clean [i][j] syntax
+    // index matrix using clean [i][j] syntax
     const T* operator[](unsigned row);
     // matrix + matrix
     const Matrix2D<T>& operator+(const Matrix2D<T>& right) const;
@@ -42,11 +42,11 @@ class Matrix2D
     Matrix2D<T> operator*(const T right) const;
 
   private:
-    // member functions
+    // allocates memory contiguously & returns a pointer to first element of row array
     T** constructArray(unsigned nrows, unsigned ncols, const T& val = T());
+    // populates array with values from initializer list
     void populateArray(const std::initializer_list<std::initializer_list<T>>&);
-
-    // data members
+    // pointer to first element of row array
     T** ptr_;
     unsigned nrows_;
     unsigned ncols_;
@@ -77,10 +77,9 @@ template<typename T>
 Matrix2D<T>::~Matrix2D() 
 {
   if(ptr_) {
-    // delete[] deallocates memory and calls destructor for array of objects on the heap 
-    // using plain old delete here would result in undefined behavior
+    // must use delete[], using plain old delete here would result in undefined behavior
     delete[] ptr_[0]; // delete pool 
-    delete[] ptr_; // delete array of row pointers
+    delete[] ptr_;    // delete array of row pointers
   }
 };
 
@@ -91,18 +90,17 @@ inline T** Matrix2D<T>::constructArray(unsigned nrows, unsigned ncols, const T& 
   T* pool = nullptr;
   try {
     ptr = new T*[nrows];
-    // value initialize elements to default value for given template type
-    pool = new T[nrows * ncols]{ val };
+    pool = new T[nrows * ncols]{ val };  // value initialize elements to default val for T
     for(unsigned i = 0; i < nrows; i++) {
       ptr[i] = pool;
-      // point to next row in pool
-      pool += ncols;
+      pool += ncols;  // point to next row in pool
     }
     return ptr;
   }
+  // delete ptr and throw exception in case of allocation error
   catch (std::bad_alloc& ex) {
     delete[] ptr;
-    throw ex;  // throw exception in case of allocation error
+    throw ex;
   }
 }
 
@@ -111,8 +109,8 @@ inline void Matrix2D<T>::populateArray(const std::initializer_list<std::initiali
 {
   for(unsigned i = 0; i < nrows_; i++) {
     for(unsigned j = 0; j < ncols_; j++) {
-      // maps each value from our initializer list to our R X C pool of values
-      // note: ptr_[i][j] is equivalent to *(*(ptr_+i)+j)
+      // maps each value from our initializer list to our pool 
+      // note: syntax in form of ptr_[i][j] is equivalent to *(*(ptr_+i)+j)
       ptr_[i][j] = ((listlist.begin()+i)->begin())[j];
     }
   }
@@ -141,8 +139,8 @@ template<typename T>
 inline const Matrix2D<T>& Matrix2D<T>::operator+(const Matrix2D<T>& right) const 
 {
   // 'this' pointer is bound to left-hand operand 
-  malg::Matrix2D<T>* mC = new malg::Matrix2D<T>(this->nrows_, this->ncols_);
   // note: syntax in form of ptr_[i][j] is equivalent to *(*(ptr_+i)+j)
+  malg::Matrix2D<T>* mC = new malg::Matrix2D<T>(this->nrows_, this->ncols_);
   for(unsigned i=0; i < this->nrows_; i++) {
     for(unsigned j=0;  j < this->ncols_; j++) {
       mC->ptr_[i][j] = this->ptr_[i][j] + right.ptr_[i][j]; 
@@ -155,8 +153,8 @@ template<typename T>
 inline const Matrix2D<T>& Matrix2D<T>::operator*(const Matrix2D<T>& right) const 
 {
   // 'this' pointer is bound to left-hand operand 
-  malg::Matrix2D<T>* mC = new malg::Matrix2D<T>(this->nrows_, right.ncols_);
   // note: syntax in form of ptr_[i][j] is equivalent to *(*(ptr_+i)+j)
+  malg::Matrix2D<T>* mC = new malg::Matrix2D<T>(this->nrows_, right.ncols_);
   for(unsigned i=0; i < this->nrows_; i++) {
     for(unsigned j=0;  j < right.ncols_; j++) {
       mC->ptr_[i][j] = 0;
