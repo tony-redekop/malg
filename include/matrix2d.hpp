@@ -39,16 +39,8 @@ class Matrix2D
     unsigned get_rows() const { return nrows_; }
     unsigned get_cols() const { return ncols_; }
 
-    // transposes a square matrix in-place    
-    void transpose() {
-      for(unsigned n=0; n <= (this->nrows_ - 2); n++) {
-        for(unsigned m=n+1; m <= (this->nrows_ - 1); m++) {
-          auto temp = this->ptr_[n][m];
-          this->ptr_[n][m] = this->ptr_[m][n];
-          this->ptr_[m][n] = temp;
-        }
-      }
-    };
+    // transpose a square matrix in-place    
+    void transpose();
     // allows us to index matrix using clean [i][j] syntax
     const T* operator[](unsigned row);
     // matrix + matrix
@@ -127,6 +119,18 @@ inline void Matrix2D<T>::populateArray(const std::initializer_list<std::initiali
     }
   }
   return;
+};
+
+template<typename T> 
+inline void Matrix2D<T>::transpose() 
+{
+  for(unsigned n=0; n <= (this->nrows_ - 2); n++) {
+    for(unsigned m=n+1; m <= (this->nrows_ - 1); m++) {
+      auto temp = this->ptr_[n][m];
+      this->ptr_[n][m] = this->ptr_[m][n];
+      this->ptr_[m][n] = temp;
+    }
+  }
 };
 
 template<typename T> 
