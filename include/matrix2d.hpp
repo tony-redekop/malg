@@ -30,10 +30,6 @@ class Matrix2D
     // destroy all humans 
     ~Matrix2D();
 
-    T** get_ptr() { return ptr_; };
-    unsigned get_rows() const { return nrows_; }
-    unsigned get_cols() const { return ncols_; }
-
     // transpose a square matrix in-place    
     void transpose();
     // allows us to index matrix using clean [i][j] syntax
