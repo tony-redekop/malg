@@ -112,9 +112,9 @@ inline void Matrix2D<T>::populateArray(const std::initializer_list<std::initiali
 {
   for(unsigned i = 0; i < nrows_; i++) {
     for(unsigned j = 0; j < ncols_; j++) {
-      // note: pointer arithmetic is awesome
-      // this maps each value from our initializer list to our R X C pool of values
-      *(*(ptr_+i)+j) = ((listlist.begin()+i)->begin())[j];
+      // maps each value from our initializer list to our R X C pool of values
+      // note: ptr_[i][j] is equivalent to *(*(ptr_+i)+j)
+      ptr_[i][j] = ((listlist.begin()+i)->begin())[j];
     }
   }
   return;
@@ -131,10 +131,10 @@ inline const Matrix2D<T>& Matrix2D<T>::operator+(const Matrix2D<T>& right) const
 {
   // 'this' pointer is bound to left-hand operand 
   malg::Matrix2D<T>* mC = new malg::Matrix2D<T>(this->nrows_, this->ncols_);
-  unsigned j;
+  // note: syntax in form of ptr_[i][j] is equivalent to *(*(ptr_+i)+j)
   for(unsigned i=0; i < this->nrows_; i++) {
     for(unsigned j=0;  j < this->ncols_; j++) {
-      *(*(mC->ptr_+i)+j) = *(*(this->ptr_+i)+j) + *(*(right.ptr_+i)+j);
+      mC->ptr_[i][j] = this->ptr_[i][j] + right.ptr_[i][j]; 
     }
   }
   return *mC;
@@ -145,12 +145,12 @@ inline const Matrix2D<T>& Matrix2D<T>::operator*(const Matrix2D<T>& right) const
 {
   // 'this' pointer is bound to left-hand operand 
   malg::Matrix2D<T>* mC = new malg::Matrix2D<T>(this->nrows_, right.ncols_);
-
+  // note: syntax in form of ptr_[i][j] is equivalent to *(*(ptr_+i)+j)
   for(unsigned i=0; i < this->nrows_; i++) {
     for(unsigned j=0;  j < right.ncols_; j++) {
-      *(*(mC->ptr_+i)+j) = 0;
+      mC->ptr_[i][j] = 0;
       for(unsigned k=0; k < this->ncols_; k++) {
-        *(*(mC->ptr_+i)+j) = *(*(mC->ptr_+i)+j) + (*(*(this->ptr_+i)+k)) * (*(*(right.ptr_+k)+j));
+        mC->ptr_[i][j] = mC->ptr_[i][j] + this->ptr_[i][k] * right.ptr_[k][j];
       }
     }
   } 
