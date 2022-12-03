@@ -22,8 +22,6 @@ template <typename T>
 class Matrix2D 
 {
   public:
-    typedef T value_type;
-
     Matrix2D() : ptr_(nullptr), nrows_(0), ncols_(0) {}
     // calls constructArray() to contiguously allocated memory for matrix
     Matrix2D(unsigned nrows, unsigned ncols, const T& val = T());
