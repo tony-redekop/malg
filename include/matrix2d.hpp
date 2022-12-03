@@ -25,14 +25,11 @@ class Matrix2D
     typedef T value_type;
 
     Matrix2D() : ptr_(nullptr), nrows_(0), ncols_(0) {}
-    // initializes data members and calls constructArray() to allocated memory for R X C values
+    // calls constructArray() to contiguously allocated memory for matrix
     Matrix2D(unsigned nrows, unsigned ncols, const T& val = T());
-    // allows us to use list initialization to create our matrix 
-    Matrix2D(std::initializer_list<std::initializer_list<T>> listlist) : 
-      Matrix2D((int)listlist.size(), (int)(listlist.begin())->size()) 
-    {
-      populateArray(listlist);
-    }
+    // uses list initialization to instantiate and populate our matrix
+    Matrix2D(std::initializer_list<std::initializer_list<T>> listlist); 
+    // destroy all humans 
     ~Matrix2D();
 
     T** get_ptr() { return ptr_; };
@@ -73,6 +70,13 @@ Matrix2D<T>::Matrix2D(unsigned nrows, unsigned ncols, const T& val)
   ptr_ = constructArray(nrows, ncols, val);
   nrows_ = nrows;
   ncols_ = ncols;
+}
+
+template<typename T>
+Matrix2D<T>::Matrix2D(std::initializer_list<std::initializer_list<T>> listlist) : 
+  Matrix2D((int)listlist.size(), (int)(listlist.begin())->size()) 
+{
+  populateArray(listlist);
 }
 
 template<typename T>
