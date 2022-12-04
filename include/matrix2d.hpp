@@ -23,9 +23,10 @@ class Matrix2D
 {
   public:
     Matrix2D() : ptr_(nullptr), nrows_(0), ncols_(0) {}
-    // calls constructArray() to contiguously allocated memory for matrix
-    Matrix2D(unsigned nrows, unsigned ncols, const T& val = T());
-    // uses list initialization to instantiate and populate our matrix
+    // contiguously allocates memory for R x C matrix
+    // value-initializes or fills matrix with user-supplied value
+    Matrix2D(unsigned nrows, unsigned ncols, const T val = T());
+    // instantiates matrix using list initialization
     Matrix2D(std::initializer_list<std::initializer_list<T>> listlist); 
     // destroy all humans 
     ~Matrix2D();
@@ -55,9 +56,10 @@ class Matrix2D
 
   private:
     // allocates memory contiguously & returns a pointer to first element of row array
-    T** constructArray(unsigned nrows, unsigned ncols, const T& val = T());
+    T** constructArray(unsigned nrows, unsigned ncols);
     // populates array with values from initializer list
-    void populateArray(const std::initializer_list<std::initializer_list<T>>&);
+    void fill(const std::initializer_list<std::initializer_list<T>>&);
+    void fill(const T val);
 
     // pointer to first element of row array
     T** ptr_;
@@ -66,7 +68,7 @@ class Matrix2D
 };
 
 template<typename T>
-Matrix2D<T>::Matrix2D(unsigned nrows, unsigned ncols, const T& val) 
+Matrix2D<T>::Matrix2D(unsigned nrows, unsigned ncols, const T val) 
 {
   if(!nrows) {
     throw std::invalid_argument("invalid number of rows \n");
@@ -74,16 +76,17 @@ Matrix2D<T>::Matrix2D(unsigned nrows, unsigned ncols, const T& val)
   if(!ncols) {
     throw std::invalid_argument("invalid number of columns \n");
   }
-  ptr_ = constructArray(nrows, ncols, val);
+  ptr_ = constructArray(nrows, ncols);
   nrows_ = nrows;
   ncols_ = ncols;
+  this->fill(val);
 }
 
 template<typename T>
 Matrix2D<T>::Matrix2D(std::initializer_list<std::initializer_list<T>> listlist) : 
   Matrix2D((int)listlist.size(), (int)(listlist.begin())->size()) 
 {
-  populateArray(listlist);
+  fill(listlist);
 }
 
 template<typename T>
@@ -102,14 +105,15 @@ Matrix2D<T>::~Matrix2D()
 };
 
 template<typename T> 
-inline T** Matrix2D<T>::constructArray(unsigned nrows, unsigned ncols, const T& val) 
+inline T** Matrix2D<T>::constructArray(unsigned nrows, unsigned ncols) 
 {
   T** ptr = nullptr;
   T* pool = nullptr;
   try {
     ptr = new T*[nrows];
     // value initializes pool elements with default value for T
-    pool = new T[nrows * ncols]{ val }; 
+    // pool = new T[nrows * ncols]{ val }; 
+    pool = new T[nrows * ncols]; 
     for(unsigned i = 0; i < nrows; i++) {
       ptr[i] = pool;
       // point to next row
@@ -133,12 +137,22 @@ inline T** Matrix2D<T>::constructArray(unsigned nrows, unsigned ncols, const T& 
 }
 
 template<typename T> 
-inline void Matrix2D<T>::populateArray(const std::initializer_list<std::initializer_list<T>>& listlist)
+inline void Matrix2D<T>::fill(const std::initializer_list<std::initializer_list<T>>& listlist)
 {
   // maps each value from our initializer list to our pool 
   for(unsigned i = 0; i < nrows_; i++) {
     for(unsigned j = 0; j < ncols_; j++) {
       ptr_[i][j] = ((listlist.begin()+i)->begin())[j];
+    }
+  }
+  return;
+};
+
+template<typename T> 
+inline void Matrix2D<T>::fill(const T val) {
+  for(unsigned i = 0; i < nrows_; i++) {
+    for(unsigned j = 0; j < ncols_; j++) {
+      ptr_[i][j] = val;
     }
   }
   return;
