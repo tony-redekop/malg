@@ -39,8 +39,8 @@ class Matrix2D
     // matrix * matrix
     const Matrix2D<T> operator*(const Matrix2D<T>& right) const;
     // scalar * matrix 
-    // declaring overloaded operator as a friend function allows use of built-in type as left-hand operand.
-    // for reason why we must define operator here and not outside class template
+    // friend declaration allows use of built-in types as left-hand operand.
+    // operator must be defined here and not outside of class template.
     // see https://isocpp.org/wiki/faq/templates#template-friends
     friend const Matrix2D<T> operator*(const T left, const Matrix2D<T>& right) 
     {
@@ -117,7 +117,7 @@ inline T** Matrix2D<T>::constructArray(unsigned nrows, unsigned ncols, const T& 
     // pool is incremented is not guaranteed to point to beginning of array.
     if(ptr) {
       if(ptr[0]) {
-        delete[] ptr[0];   // delete array of values (i.e 'pool')
+        delete[] ptr[0];   // delete array of values (i.e. the 'pool')
         ptr[0] = nullptr;  // avoid dangling pointers
       }
       delete[] ptr;        // delete array of row pointers
