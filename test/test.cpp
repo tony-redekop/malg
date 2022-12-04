@@ -66,6 +66,7 @@ int main()
   }
 
   std::cout << "ALL TESTS COMPLETE" << std::endl;
+  std::cout << "See test.cpp for details" << std::endl;
   std::cout << "Antonio Redekop" << std::endl;
   return 0;
 }
