@@ -35,7 +35,14 @@ int main()
            mC[1][0] == 0 && mC[1][1] == 1 &&
            mC[2][0] == 6 && mC[2][1] == 7 &&
            mC[3][0] == 2 && mC[3][1] == 3);
-    std::cout << "TEST 3 : PASSED" << std::endl;
+    // now test with incompatible dimensions
+    try {
+      malg::Matrix2D<int> mD = mB * mA;
+    }
+    catch(std::exception &e) {
+      // we expect an exception
+      std::cout << "TEST 3 : PASSED" << std::endl;
+    }
   }
   { // TEST 4 - matrix multiplication (scalar * matrix)
     int scalar = 2;
