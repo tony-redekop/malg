@@ -8,7 +8,7 @@
 namespace malg {
 
 /**
- * class template allows matrix elements of generic built-in type (int, float, etc).
+ * class template allows elements of generic built-in type (int, float, etc).
  *
  * implements a matrix as an array of row pointers pointing to a position in an array.
  * abstractly, we can think of the matrix as a 2D array or an R x C 'pool' of values.
@@ -39,8 +39,19 @@ class Matrix2D
     // matrix * matrix
     const Matrix2D<T> operator*(const Matrix2D<T>& right) const;
     // scalar * matrix 
-    template<typename F>  
-    friend const Matrix2D<F> operator* (const F, const Matrix2D<F>&);
+    // declaring overloaded operator as a friend function allows use of built-in type as left-hand operand.
+    // for reason why we must define operator here and not outside class template
+    // see https://isocpp.org/wiki/faq/templates#template-friends
+    friend const Matrix2D<T> operator*(const T left, const Matrix2D<T>& right) 
+    {
+      Matrix2D<T> mC = Matrix2D<T>(right.nrows_, right.ncols_); 
+      for(unsigned i=0; i < right.nrows_; i++) {
+        for(unsigned j=0;  j < right.ncols_; j++) {
+          mC.ptr_[i][j] = left * right.ptr_[i][j]; 
+        }
+      }
+      return mC;
+    };
 
   private:
     // allocates memory contiguously & returns a pointer to first element of row array
@@ -176,19 +187,6 @@ inline const Matrix2D<T> Matrix2D<T>::operator*(const Matrix2D<T>& right) const
       }
     }
   } 
-  return mC;
-}
-
-template<typename T> 
-inline const Matrix2D<T> operator* (const T left, const Matrix2D<T>& right)
-{
-  // note: syntax in form of ptr_[i][j] is equivalent to *(*(ptr_+i)+j)
-  malg::Matrix2D<T> mC = Matrix2D<T>(right.nrows_, right.ncols_); 
-  for(unsigned i=0; i < right.nrows_; i++) {
-    for(unsigned j=0;  j < right.ncols_; j++) {
-      mC.ptr_[i][j] = left * right.ptr_[i][j]; 
-    }
-  }
   return mC;
 }
 
