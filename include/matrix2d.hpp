@@ -58,6 +58,7 @@ class Matrix2D
     T** constructArray(unsigned nrows, unsigned ncols, const T& val = T());
     // populates array with values from initializer list
     void populateArray(const std::initializer_list<std::initializer_list<T>>&);
+
     // pointer to first element of row array
     T** ptr_;
     unsigned nrows_;
@@ -90,10 +91,12 @@ Matrix2D<T>::~Matrix2D()
 {
   if(ptr_) {
     if(ptr_[0]) {
-      delete[] ptr_[0];   // delete array of values (i.e 'pool')
-      ptr_[0] = nullptr;  // avoid dangling pointers
+      // delete pool of values
+      delete[] ptr_[0];   
+      ptr_[0] = nullptr;  
     }
-    delete[] ptr_;        // delete array of row pointers
+    // delete array of row pointers
+    delete[] ptr_; 
     ptr_ = nullptr;
   }
 };
@@ -105,22 +108,24 @@ inline T** Matrix2D<T>::constructArray(unsigned nrows, unsigned ncols, const T& 
   T* pool = nullptr;
   try {
     ptr = new T*[nrows];
-    pool = new T[nrows * ncols]{ val };  // value initialize to default val for T
+    // value initializes pool elements with default value for T
+    pool = new T[nrows * ncols]{ val }; 
     for(unsigned i = 0; i < nrows; i++) {
       ptr[i] = pool;
-      pool += ncols;  // point to next row in pool
+      // point to next row
+      pool += ncols; 
     }
     return ptr;
   }
   catch (std::bad_alloc& ex) {
-    // note: we must delete ptr[0] here, not pool. 
-    // pool is incremented is not guaranteed to point to beginning of array.
+    // note: we must delete ptr[0] here, not pool
+    // pool is not guaranteed to point to beginning of array.
     if(ptr) {
-      if(ptr[0]) {
-        delete[] ptr[0];   // delete array of values (i.e. the 'pool')
-        ptr[0] = nullptr;  // avoid dangling pointers
+      if(ptr[0]) {   
+        delete[] ptr[0];   
+        ptr[0] = nullptr;  
       }
-      delete[] ptr;        // delete array of row pointers
+      delete[] ptr;        
       ptr = nullptr;
     }
     throw ex;
@@ -130,10 +135,9 @@ inline T** Matrix2D<T>::constructArray(unsigned nrows, unsigned ncols, const T& 
 template<typename T> 
 inline void Matrix2D<T>::populateArray(const std::initializer_list<std::initializer_list<T>>& listlist)
 {
+  // maps each value from our initializer list to our pool 
   for(unsigned i = 0; i < nrows_; i++) {
     for(unsigned j = 0; j < ncols_; j++) {
-      // maps each value from our initializer list to our pool 
-      // note: syntax in form of ptr_[i][j] is equivalent to *(*(ptr_+i)+j)
       ptr_[i][j] = ((listlist.begin()+i)->begin())[j];
     }
   }
@@ -161,12 +165,10 @@ inline const T* Matrix2D<T>::operator[](unsigned row)
 template<typename T> 
 inline const Matrix2D<T> Matrix2D<T>::operator+(const Matrix2D<T>& right) const 
 {
-  // 'this' pointer is bound to left-hand operand 
   // note: syntax in form of ptr_[i][j] is equivalent to *(*(ptr_+i)+j)
   malg::Matrix2D<T> mC = Matrix2D<T>(this->nrows_, this->ncols_); 
   for(unsigned i=0; i < this->nrows_; i++) {
     for(unsigned j=0;  j < this->ncols_; j++) {
-      // mC->ptr_[i][j] = this->ptr_[i][j] + right.ptr_[i][j]; 
       mC.ptr_[i][j] = this->ptr_[i][j] + right.ptr_[i][j]; 
     }
   }
