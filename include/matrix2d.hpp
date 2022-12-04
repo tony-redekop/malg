@@ -68,10 +68,10 @@ template<typename T>
 Matrix2D<T>::Matrix2D(unsigned nrows, unsigned ncols, const T& val) 
 {
   if(!nrows) {
-    throw std::invalid_argument("number of rows is 0");
+    throw std::invalid_argument("invalid number of rows \n");
   }
   if(!ncols) {
-    throw std::invalid_argument("number of cols is 0");
+    throw std::invalid_argument("invalid number of columns \n");
   }
   ptr_ = constructArray(nrows, ncols, val);
   nrows_ = nrows;
@@ -176,7 +176,9 @@ inline const Matrix2D<T> Matrix2D<T>::operator+(const Matrix2D<T>& right) const
 template<typename T> 
 inline const Matrix2D<T> Matrix2D<T>::operator*(const Matrix2D<T>& right) const 
 {
-  // 'this' pointer is bound to left-hand operand 
+  if(this->ncols_ != right.nrows_) {
+    throw std::range_error("incompatible matrix dimensions \n");;
+  }
   // note: syntax in form of ptr_[i][j] is equivalent to *(*(ptr_+i)+j)
   malg::Matrix2D<T> mC = malg::Matrix2D<T>(this->nrows_, right.ncols_);
   for(unsigned i=0; i < this->nrows_; i++) {
