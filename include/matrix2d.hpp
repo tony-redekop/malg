@@ -177,6 +177,9 @@ inline void Matrix2D<T>::transpose()
 template<typename T> 
 inline const T* Matrix2D<T>::operator[](unsigned row) 
 {
+  if(row >= this->nrows_) {
+    throw std::range_error("out of range row index\n");;
+  }
   return ptr_[row];
 }
 
