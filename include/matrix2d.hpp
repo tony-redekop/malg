@@ -8,13 +8,17 @@
 namespace malg {
 
 /**
- * class template allows elements of generic built-in type (int, float, etc).
+ * class template allows matrix values of generic scalar types (int, float, etc).
+ * example: Matrix2D<bool>, Matrix2D<double>
  *
- * implements a matrix as an array of row pointers pointing to a position in an array.
- * abstractly, we can think of the matrix as a 2D array or an R x C 'pool' of values.
+ * we implement matrix as an array of row pointers pointing to a position in array of values.
+ * abstractly, we can think of the matrix as a 2D array holding an R x C 'pool' of values.
+ *
+ * we access a row pointer with ptr->[i], where i is the desired 0-indexed row.
+ * we access any value in the pool with ptr->[i][j], where j is the desired 0-indexed col.
  *
  * unlike a 'vector of vectors' or traditional C++ 2D array, this implementation 
- * contiguously allocates memory AND allows dynamic sizing of matrix at runtime.
+ * contiguously allocates memory AND allows dynamic allocation of matrices at runtime.
  * we can also list-initialize matrices and access elements using [i][j] syntax.
  *
  */
