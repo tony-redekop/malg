@@ -64,6 +64,11 @@ class Matrix2D
     // populates array with values from initializer list
     void fill(const std::initializer_list<std::initializer_list<T>>&);
     void fill(const T val);
+    void swap(T& val1, T& val2) {
+      const T temp = val1;
+      val1 = val2;
+      val2 = temp;
+    }
 
     // pointer to first element of row array
     T** ptr_;
@@ -165,11 +170,12 @@ inline void Matrix2D<T>::fill(const T val) {
 template<typename T> 
 inline void Matrix2D<T>::transpose() 
 {
-  for(unsigned n=0; n <= (this->nrows_ - 2); n++) {
-    for(unsigned m=n+1; m <= (this->nrows_ - 1); m++) {
-      auto temp = this->ptr_[n][m];
-      this->ptr_[n][m] = this->ptr_[m][n];
-      this->ptr_[m][n] = temp;
+  // if square matrix
+  if(this->nrows_ == this->ncols_) {
+    for(unsigned i=0; i < this->nrows_; i++) {
+      for(unsigned j=i+1; j < this->nrows_; j++) {
+        this->swap(this->ptr_[i][j], this->ptr_[j][i]);
+      }
     }
   }
 };
