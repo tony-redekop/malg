@@ -126,7 +126,30 @@ int main() {
            mA[3][0] == 14 && mA[3][1] == 24);
     std::cout << "TEST 2 : case 1 : PASS" << std::endl;
   }
-  std::cout << "TEST 2 : COMPLETE" << std::endl;
+  std::cout << "TEST 2 : COMPLETE\n" << std::endl;
+  // TEST 3 : case 0 : deep-copy a matrix 
+  {
+    malg::Matrix2D<double>* mA = nullptr;
+    try {
+      mA = new malg::Matrix2D<double>{  
+        {666.0, 187.3, 19.2},
+        {123.4, 777.0, 3.14}};
+      // our copy-constructor implements deep-copy
+      malg::Matrix2D<double> mB{*mA};
+      // we delete mA to prove that mB is a deep copy
+      delete mA;
+      assert(mB[0][0] == 666.0 && mB[0][1] == 187.3 && mB[0][2] == 19.2 &&
+             mB[1][0] == 123.4 && mB[1][1] == 777.0 && mB[1][2] == 3.14);
+    }
+    catch(std::bad_alloc& e) {
+      if(mA) {
+        delete mA;
+      }
+      std::cout << "failed to allocate memory for TEST 3" << std::endl;
+    }
+    std::cout << "TEST 3 : case 0 : PASS" << std::endl;
+  }
+  std::cout << "TEST 3 : COMPLETE" << std::endl;
   std::cout << std::endl << "ALL TESTS COMPLETE" << std::endl;
   std::cout << "See test.cpp for details" << std::endl;
   std::cout << "Antonio Redekop" << std::endl;

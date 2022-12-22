@@ -33,6 +33,15 @@ class Matrix2D
     Matrix2D(unsigned nrows, unsigned ncols, const T val = T());
     // instantiates matrix using list initialization
     Matrix2D(std::initializer_list<std::initializer_list<T>> listlist); 
+    // copy-constructor
+    Matrix2D(const Matrix2D<T>& m) :
+      ptr_{constructArray(m.nrows_, m.ncols_)}, nrows_{m.nrows_}, ncols_{m.ncols_} 
+    {
+      // ptr[0] points to the beginning of our value pool.
+      // memory for value pool has already been initialized, 
+      // therefore we use std::copy, not std::uninitialized_copy
+      std::copy(m.ptr_[0], m.ptr_[0]+(m.nrows_ * m.ncols_), ptr_[0]);
+    }
     // destroy all humans 
     ~Matrix2D();
 
@@ -188,6 +197,7 @@ inline void Matrix2D<T>::transpose()
       continue;
     int a = cycle - first;
     do {
+      // formula finds permutation cycles
       a = a == nm1 ? nm1  : (nrows_ * a) % nm1;
       std::swap(*(first + a), *cycle);
       visited[a] = true;
