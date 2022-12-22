@@ -114,7 +114,18 @@ int main() {
            mA[3][0] == 0 && mA[3][1] == 0 && mA[3][2] == 1 && mA[3][3] == 0);
     std::cout << "TEST 2 : case 0 : PASS" << std::endl;
   }
-
+  // TEST 2 : case 1 : transpose non-square matrix in place
+  {
+    malg::Matrix2D<int> mA = 
+      {{11,12,13,14},
+       {21,22,23,24}};
+    mA.transpose(); 
+    assert(mA[0][0] == 11 && mA[0][1] == 21 &&
+           mA[1][0] == 12 && mA[1][1] == 22 &&
+           mA[2][0] == 13 && mA[2][1] == 23 &&
+           mA[3][0] == 14 && mA[3][1] == 24);
+    std::cout << "TEST 2 : case 1 : PASS" << std::endl;
+  }
   std::cout << "TEST 2 : COMPLETE" << std::endl;
   std::cout << std::endl << "ALL TESTS COMPLETE" << std::endl;
   std::cout << "See test.cpp for details" << std::endl;

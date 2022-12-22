@@ -4,6 +4,7 @@
 #include <new>
 #include <stdexcept>
 #include <initializer_list>
+#include <vector>
 
 namespace malg {
 
@@ -177,7 +178,51 @@ inline void Matrix2D<T>::transpose()
         this->swap(this->ptr_[i][j], this->ptr_[j][i]);
       }
     }
+    return;
   }
+
+  // if non-square matrix
+  // the below algorithm changes the value pool in-place
+  // note: ptr_[0] points to the beginning of the value pool
+  const int nm1 = nrows_ * ncols_ - 1;
+  T* first = ptr_[0];
+  T* last = ptr_[0] + nm1;
+  std::vector<bool> visited(last-first);
+  T* cycle = first;
+  while(++cycle != last) {
+    if(visited[cycle - first]) 
+      continue;
+    int a = cycle - first;
+    do {
+      a = a == nm1 ? nm1  : (nrows_ * a) % nm1;
+      std::swap(*(first + a), *cycle);
+      visited[a] = true;
+    } while((first + a) != cycle);
+  }
+  
+  // swap the number of rows and columns
+  unsigned temp = nrows_;
+  nrows_ = ncols_;
+  ncols_ = temp;
+
+  // our value pool was changed in-place and remains in row-major ordering
+  T* pool = ptr_[0];
+
+  // delete existing array of row pointers 
+  delete ptr_;
+  ptr_ = nullptr;
+
+  // create a new array of row pointers for transposed pool 
+  T** p = new T*[nrows_];
+  for(unsigned i = 0; i < nrows_; i++) {
+    p[i] = pool;
+    // point to next row
+    pool += ncols_; 
+  }
+
+  // point ptr_ to new array of row pointers
+  ptr_ = p;
+
 };
 
 template<typename T> 
