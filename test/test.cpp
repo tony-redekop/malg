@@ -145,9 +145,33 @@ int main() {
       if(mA) {
         delete mA;
       }
-      std::cout << "failed to allocate memory for TEST 3" << std::endl;
+      std::cout << "failed to allocate memory for TEST 3 : case 0" << std::endl;
     }
     std::cout << "TEST 3 : case 0 : PASS" << std::endl;
+  }
+  // TEST 3 : case 1 : copy assignment of matrix
+  {
+    malg::Matrix2D<unsigned>* mA = nullptr;
+    try {
+      mA = new malg::Matrix2D<unsigned>{
+        {10, 20, 69},
+        {40, 50, 60}};
+      malg::Matrix2D<unsigned> mB = 
+        {{1, 2, 3},
+         {4, 5, 6}};
+      mB = *mA;
+      // we delete mA to prove that mB is a deep copy by assignment
+      delete mA;
+      assert(mB[0][0] == 10 && mB[0][1] == 20 && mB[0][2] == 69 &&
+            mB[1][0] == 40 && mB[1][1] == 50 && mB[1][2] == 60);
+    }
+    catch(std::bad_alloc& e) {
+      if(mA) {
+        delete mA;
+      }
+      std::cout << "failed to allocate memory for TEST 3 : case 1" << std::endl;
+    }
+    std::cout << "TEST 3 : case 1 : PASS" << std::endl;
   }
   std::cout << "TEST 3 : COMPLETE" << std::endl;
   std::cout << std::endl << "ALL TESTS COMPLETE" << std::endl;

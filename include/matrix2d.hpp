@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <initializer_list>
 #include <vector>
+#include <iostream>
 
 namespace malg {
 
@@ -42,7 +43,15 @@ class Matrix2D
       // therefore we use std::copy, not std::uninitialized_copy
       std::copy(m.ptr_[0], m.ptr_[0]+(m.nrows_ * m.ncols_), ptr_[0]);
     }
-    // destroy all humans 
+    // copy assignment
+    Matrix2D<T>& operator=(const Matrix2D<T>& m) {
+      if(nrows_ != m.nrows_ || ncols_ != m.ncols_) {
+        throw std::runtime_error("incompatible sizes in Matrix2D =");
+      }
+      std::copy(m.ptr_[0], m.ptr_[0]+(m.nrows_ * m.ncols_), ptr_[0]);
+      return *this;
+    }
+    // destroy all humans
     ~Matrix2D();
 
     // transpose a square matrix in-place    
