@@ -35,41 +35,13 @@ class Matrix2D
     // instantiates matrix using list initialization
     Matrix2D(std::initializer_list<std::initializer_list<T>> listlist); 
     // copy constructor
-    Matrix2D(const Matrix2D<T>& m) :
-      ptr_{constructArray(m.nrows_, m.ncols_)}, nrows_{m.nrows_}, ncols_{m.ncols_} 
-    {
-      // ptr[0] points to the beginning of our value pool.
-      // memory for value pool has already been initialized, 
-      // therefore we use std::copy, not std::uninitialized_copy
-      std::copy(m.ptr_[0], m.ptr_[0]+(m.nrows_ * m.ncols_), ptr_[0]);
-    }
+    Matrix2D(const Matrix2D<T>& m);
     // move constructor
-    Matrix2D(Matrix2D<T>&& m) :
-      ptr_{m.ptr_}, nrows_{m.nrows_}, ncols_{m.ncols_} 
-    {
-      m.ptr_ = nullptr;
-      m.nrows_ = 0;
-      m.ncols_ = 0;
-      // std::cout << "move" << std::endl;
-    }
+    Matrix2D(Matrix2D<T>&& m);
     // move assignment
-    Matrix2D& operator=(Matrix2D<T>&& m) 
-    {
-      std::swap(ptr_, m.ptr_);
-      std::swap(nrows_, m.nrows_);
-      std::swap(ncols_, m.ncols_);
-      // std::cout << "move assignment" << std::endl;
-      return *this;
-    }
-    
+    Matrix2D& operator=(Matrix2D<T>&& m);
     // copy assignment
-    Matrix2D<T>& operator=(const Matrix2D<T>& m) {
-      if(nrows_ != m.nrows_ || ncols_ != m.ncols_) {
-        throw std::runtime_error("incompatible sizes in Matrix2D =");
-      }
-      std::copy(m.ptr_[0], m.ptr_[0]+(m.nrows_ * m.ncols_), ptr_[0]);
-      return *this;
-    }
+    Matrix2D<T>& operator=(const Matrix2D<T>& m);
     // destroy all humans
     ~Matrix2D();
 
@@ -128,6 +100,46 @@ Matrix2D<T>::Matrix2D(std::initializer_list<std::initializer_list<T>> listlist) 
   Matrix2D((int)listlist.size(), (int)(listlist.begin())->size()) 
 {
   fill(listlist);
+}
+
+template<typename T>
+Matrix2D<T>::Matrix2D(const Matrix2D<T>& m) :
+  ptr_{constructArray(m.nrows_, m.ncols_)}, nrows_{m.nrows_}, ncols_{m.ncols_} 
+{
+  // ptr[0] points to the beginning of our value pool.
+  // memory for value pool has already been initialized, 
+  // therefore we use std::copy, not std::uninitialized_copy
+  std::copy(m.ptr_[0], m.ptr_[0]+(m.nrows_ * m.ncols_), ptr_[0]);
+}
+
+template<typename T>
+Matrix2D<T>::Matrix2D(Matrix2D<T>&& m) :
+  ptr_{m.ptr_}, nrows_{m.nrows_}, ncols_{m.ncols_} 
+{
+      m.ptr_ = nullptr;
+      m.nrows_ = 0;
+      m.ncols_ = 0;
+      // std::cout << "move" << std::endl;
+}
+
+template<typename T>
+Matrix2D<T>& Matrix2D<T>::operator=(Matrix2D<T>&& m) 
+{
+  std::swap(ptr_, m.ptr_);
+  std::swap(nrows_, m.nrows_);
+  std::swap(ncols_, m.ncols_);
+  // std::cout << "move assignment" << std::endl;
+  return *this;
+}
+
+template<typename T>
+Matrix2D<T>& Matrix2D<T>::operator=(const Matrix2D<T>& m)
+{
+  if(nrows_ != m.nrows_ || ncols_ != m.ncols_) {
+    throw std::runtime_error("incompatible sizes in Matrix2D =");
+  }
+  std::copy(m.ptr_[0], m.ptr_[0]+(m.nrows_ * m.ncols_), ptr_[0]);
+  return *this;
 }
 
 template<typename T>
