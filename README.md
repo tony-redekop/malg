@@ -2,7 +2,7 @@
 
 Portable, header-only linear algebra library written by Antonio Redekop.
 
-### Goals (complete)
+### Goals
 
 - Create a portable and efficient class template with a clean interface.
 - Flexibility to use generic scalar types for matrix value (e.g. int, float).
@@ -10,13 +10,8 @@ Portable, header-only linear algebra library written by Antonio Redekop.
 - Dynamic allocation of memory at runtime (no built-in C++ 2D arrays).
 - Easy to use M[i][j] element access and list-initialization syntax.
 - Implement multiplication operations (matrix * matrix) and (scalar * matrix)
-- Implement transpose operation (square matrix)
-
-### Goals (pending)
-
-- Implement operation for in-place transposition of non-square matrices
-- Define operation for in-place assignment by index.
-- Define copy constructor, copy-assignment constructor.
+- Implement transpose operation (square and NxM matrices)
+- Implement move semantics (move constructor, move assignment)
 
 ### Dependencies
 - **cmake** minimum 3.14

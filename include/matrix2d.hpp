@@ -116,10 +116,10 @@ template<typename T>
 Matrix2D<T>::Matrix2D(Matrix2D<T>&& m) :
   ptr_{m.ptr_}, nrows_{m.nrows_}, ncols_{m.ncols_} 
 {
-      m.ptr_ = nullptr;
-      m.nrows_ = 0;
-      m.ncols_ = 0;
-      // std::cout << "move" << std::endl;
+  m.ptr_ = nullptr;
+  m.nrows_ = 0;
+  m.ncols_ = 0;
+  // std::cout << "move" << std::endl;
 }
 
 template<typename T>
@@ -223,7 +223,6 @@ inline void Matrix2D<T>::transpose()
     }
     return;
   }
-
   // if non-square matrix
   // the below algorithm changes the value pool in-place
   // note: ptr_[0] points to the beginning of the value pool
@@ -243,19 +242,15 @@ inline void Matrix2D<T>::transpose()
       visited[a] = true;
     } while((first + a) != cycle);
   }
-  
   // swap the number of rows and columns
   unsigned temp = nrows_;
   nrows_ = ncols_;
   ncols_ = temp;
-
   // our value pool was changed in-place and remains in row-major ordering
   T* pool = ptr_[0];
-
   // delete existing array of row pointers 
   delete ptr_;
   ptr_ = nullptr;
-
   // create a new array of row pointers for transposed pool 
   T** p = new T*[nrows_];
   for(unsigned i = 0; i < nrows_; i++) {
@@ -263,7 +258,6 @@ inline void Matrix2D<T>::transpose()
     // point to next row
     pool += ncols_; 
   }
-
   // point ptr_ to new array of row pointers
   ptr_ = p;
 
