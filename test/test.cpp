@@ -2,6 +2,14 @@
 #include <iostream>
 #include <cassert>
 
+malg::Matrix2D<int> test_move() {
+  malg::Matrix2D<int> m(1000, 1000, 666);
+  // note: testing move semantics in this case requires compiler
+  // flag -fno-elide-constructors to disable copy ellision
+  // see top-most CMakeLists.txt for further notes 
+  return m;
+}
+
 int main() {
   std::cout << "TEST 0 : INSTANTIATE" << std::endl;
 
@@ -172,6 +180,21 @@ int main() {
       std::cout << "failed to allocate memory for TEST 3 : case 1" << std::endl;
     }
     std::cout << "TEST 3 : case 1 : PASS" << std::endl;
+  }
+  // TEST 3 : case 2 : test move semantics 
+  {
+    // to test move constructor, uncomment cout statment in move constructor
+    malg::Matrix2D<int> mA{test_move()};
+    assert(mA[100][100] == 666);
+
+    // to test move assignment, uncomment cout statement in move assignment operator
+    malg::Matrix2D<int> mB = {{50588, 2200, 360}};
+    assert(mB[0][0] == 50588 && mB[0][1] == 2200 && mB[0][2] == 360);
+    malg::Matrix2D<int> temp = std::move(mA);
+    mA = std::move(mB);
+    mB = std::move(temp);
+    assert(mA[0][0] == 50588 && mA[0][1] == 2200 && mA[0][2] == 360);
+    std::cout << "TEST 3 : case 2 : PASS" << std::endl;
   }
   std::cout << "TEST 3 : COMPLETE" << std::endl;
   std::cout << std::endl << "ALL TESTS COMPLETE" << std::endl;

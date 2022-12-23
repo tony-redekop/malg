@@ -34,7 +34,7 @@ class Matrix2D
     Matrix2D(unsigned nrows, unsigned ncols, const T val = T());
     // instantiates matrix using list initialization
     Matrix2D(std::initializer_list<std::initializer_list<T>> listlist); 
-    // copy-constructor
+    // copy constructor
     Matrix2D(const Matrix2D<T>& m) :
       ptr_{constructArray(m.nrows_, m.ncols_)}, nrows_{m.nrows_}, ncols_{m.ncols_} 
     {
@@ -43,6 +43,25 @@ class Matrix2D
       // therefore we use std::copy, not std::uninitialized_copy
       std::copy(m.ptr_[0], m.ptr_[0]+(m.nrows_ * m.ncols_), ptr_[0]);
     }
+    // move constructor
+    Matrix2D(Matrix2D<T>&& m) :
+      ptr_{m.ptr_}, nrows_{m.nrows_}, ncols_{m.ncols_} 
+    {
+      m.ptr_ = nullptr;
+      m.nrows_ = 0;
+      m.ncols_ = 0;
+      // std::cout << "move" << std::endl;
+    }
+    // move assignment
+    Matrix2D& operator=(Matrix2D<T>&& m) 
+    {
+      std::swap(ptr_, m.ptr_);
+      std::swap(nrows_, m.nrows_);
+      std::swap(ncols_, m.ncols_);
+      // std::cout << "move assignment" << std::endl;
+      return *this;
+    }
+    
     // copy assignment
     Matrix2D<T>& operator=(const Matrix2D<T>& m) {
       if(nrows_ != m.nrows_ || ncols_ != m.ncols_) {
